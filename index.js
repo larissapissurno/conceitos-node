@@ -8,7 +8,7 @@ server.use(express.json());
 //Route params = /users/1
 //Request body = { "name": 'Larissa Pissurno' }
 
-const users = ['Larissa', 'Tawany', 'Thay', 'Isabela'];
+const RESPONSE_USERS = ['Larissa', 'Tawany', 'Thay', 'Anna'];
 
 server.use((req, res, next) => {
   console.time('Request');
@@ -29,7 +29,7 @@ function checkUserExists(req, res, next) {
 
 function checkUserInArray(req, res, next) {
   const { index } = req.params;
-  const user = users[index];
+  const user = RESPONSE_USERS[index];
   if (!user) {
     return res.status(400).json({ error: 'User does not exists' });
   }
@@ -40,40 +40,43 @@ function checkUserInArray(req, res, next) {
 }
 
 server.get('/users', (req, res) => {
-  return res.json(users);
+  return res.json(RESPONSE_USERS);
 });
 
-server.get('/users/:index', (req, res) => {
-  const { nome } = req.query;
-  const { index } = req.params;
+server.get('/users/:name', (req, res) => {
+  const { name } = req.params;
 
-  return res.json(users[index]);
+  const userIndex = RESPONSE_USERS.findIndex(username => username === name)
+
+  return res.json(RESPONSE_USERS[userIndex]);
   
 });
 
 server.post('/users', checkUserExists, (req, res) => {
   const { name } = req.body;
 
-  users.push(name);
+  RESPONSE_USERS.push(name);
 
-  return res.json(users);
+  return res.json(RESPONSE_USERS);
 });
 
 server.put('/users/:index', checkUserExists, checkUserInArray, (req, res) => {
   const { index } = req.params;
   const { name } = req.body;
 
-  users[index] = name;
+  RESPONSE_USERS[index] = name;
 
-  return res.json(users);
+  return res.json(RESPONSE_USERS);
 });
 
 server.delete('/users/:index', checkUserInArray, (req, res) => {
   const { index } = req.params;
 
-  users.splice(index, 1);
+  RESPONSE_USERS.splice(index, 1);
 
   return res.send();
 })
 
 server.listen(3000);
+
+module.exports = server;
